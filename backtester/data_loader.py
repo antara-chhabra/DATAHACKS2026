@@ -720,6 +720,13 @@ def build_timeline(
         # we just created would cost 2+ minutes and saves nothing material.
         del books_df, slim
 
+        # Move everything created so far to the "permanent generation"
+        # (gc.freeze). Subsequent collections during the tick loop only
+        # scan newly-created objects, not the 1M+ immutable book snapshots
+        # we just built. Removes the 1-2 minute stall we were seeing
+        # between "parsed" and the first timeline-progress log.
+        gc.freeze()
+
     # Track which slugs have JSONL books vs need synthetic
     slugs_with_books = set(books_by_slug.keys())
     slugs_need_synthetic = set(all_slugs) - slugs_with_books
