@@ -31,15 +31,45 @@ python run_backtest.py my_strategy.py --data data/validation/
 
 Both backtest commands print a `BACKTEST REPORT` block with P&L, Sharpe ratio, max drawdown, trade count, and the `Competition Score` (= total P&L).
 
+---
+
+## Pick your scope — one market, one asset, or all of them
+
+This is a **strategic design choice**, not a constraint. You can build:
+
+- A **specialist** — e.g. "only 5-minute BTC markets," ignore everything else.
+- A **multi-asset directional bot** — e.g. "all three assets, 5m + 15m only."
+- A **generalist** — all assets, all intervals, using the full cross-market signal.
+
+The backtester hands your `on_tick()` method **every active market** every second. Whether you act on one market or all of them is entirely up to your code:
+
+```python
+def on_tick(self, state: MarketState) -> list[Order]:
+    for slug, market in state.markets.items():
+        # Specialist — only trade 5m BTC
+        if market.interval != "5m":
+            continue
+        if not slug.startswith("btc-"):
+            continue
+        # ... your logic for BTC 5m only
+```
+
+**Two layers of filtering are available:**
+
+1. **CLI flags (dev-loop only)** — `--assets BTC --intervals 5m` tells the backtester *not even to load* markets outside your scope. Big speedup while you iterate. See the table below.
+2. **In-strategy filtering (always applies)** — your `on_tick()` can skip markets by slug, interval, or any other property. This is what runs at final scoring.
+
+**Important:** the final test run is **unfiltered** — the judge's backtest loads every asset and every interval. So even if you use `--assets BTC` during development, your submitted strategy will still *see* ETH and SOL markets. Your code needs to explicitly ignore what it doesn't trade (like the example above); it doesn't get the CLI filter for free at scoring time.
+
 ### Speeding up your dev loop
 
-The full training set is 178 hours of 1-second ticks. Backtests can take a few minutes on the whole thing. To iterate faster, slice what gets loaded:
+The full training set is 178 hours of 1-second ticks across 8,466 markets. A full backtest takes ~2–3 minutes. If you're only exploring one asset or one interval, **filter it down** — the backtester only parses data for markets you're actually going to trade.
 
 ```bash
 # Only the last 4 hours of data
 python run_backtest.py my_strategy.py --hours 4
 
-# Only BTC markets (or --assets ETH, --assets BTC ETH, etc.)
+# Only BTC markets (choices: BTC, ETH, SOL; combine freely)
 python run_backtest.py my_strategy.py --assets BTC
 
 # Only 5-minute markets
@@ -49,11 +79,25 @@ python run_backtest.py my_strategy.py --intervals 5m
 python run_backtest.py my_strategy.py --hours 4 --assets BTC --intervals 5m
 ```
 
-Final scoring on the held-out test set runs with **all intervals and all assets** — so remember to run an unfiltered validation pass before you submit:
+**Measured `build_timeline` times (Windows laptop, data on a local SSD):**
 
-```bash
-python run_backtest.py my_strategy.py --data data/validation/
-```
+| Flags | Train (178 h) | Val (38 h) | Markets (train / val) |
+|---|---|---|---|
+| (unfiltered) | 117 s | 52 s | 8,466 / 1,937 |
+| `--assets BTC` | 59 s | 33 s | 2,833 / 646 |
+| `--intervals 5m` | 61 s | 29 s | 5,842 / ~1,320 |
+| `--assets BTC --intervals 5m` | **39 s** | **24 s** | 1,956 / 454 |
+| `--hours 4 --assets BTC --intervals 5m` | ~10 s | ~10 s | ~120 |
+
+(Add ~30–60 s for the engine's own tick loop on top of timeline build for the full run.)
+
+> **Important:** the final test set is scored with **all intervals and all assets** — no filters. Before you submit, always run an unfiltered validation pass:
+>
+> ```bash
+> python run_backtest.py my_strategy.py --data data/validation/
+> ```
+>
+> If your strategy's filtered-train P&L is great but its unfiltered-validation P&L is bad, you're overfitting to a narrow slice.
 
 ---
 

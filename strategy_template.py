@@ -14,13 +14,51 @@ COMPETITION RULES
 - Scoring: Total P&L is the primary metric; Sharpe ratio breaks ties.
 - Submit a single .py file containing your strategy class.
 
-MARKET SELECTION
-----------------
-- Your strategy receives ALL active markets across all intervals and assets
-- Markets exist for BTC, SOL, and ETH
-- Filter state.markets by market.interval to trade specific intervals
-- Identify the asset from the slug prefix: btc-/bitcoin-, sol-/solana-, eth-/ethereum-
-- You can trade 5m, 15m, and hourly markets simultaneously across all assets
+MARKET SELECTION — YOU PICK YOUR SCOPE
+---------------------------------------
+Your strategy receives ALL active markets across all 3 assets (BTC, SOL, ETH)
+and all 3 intervals (5m, 15m, hourly). It is up to you which of these you
+actually trade.
+
+Some strategies you might build:
+
+  Specialist       — trade one asset, one interval only (e.g. 5m BTC only)
+  Multi-asset      — e.g. all 3 assets, only 5m intervals
+  Multi-interval   — e.g. BTC only, across 5m + 15m + hourly
+  Generalist       — trade everything
+
+Examples:
+
+    # Trade only 5m BTC
+    for slug, market in state.markets.items():
+        if market.interval != "5m":
+            continue
+        if not slug.startswith("btc-"):
+            continue
+        # ... your logic
+
+    # Trade all 5m across all three assets
+    for slug, market in state.markets.items():
+        if market.interval != "5m":
+            continue
+        # ... your logic
+
+    # Trade everything
+    for slug, market in state.markets.items():
+        # ... your logic
+
+Asset detection by slug prefix:
+    BTC → slug starts with "btc-" or "bitcoin-"
+    SOL → slug starts with "sol-" or "solana-"
+    ETH → slug starts with "eth-" or "ethereum-"
+
+IMPORTANT — Dev-loop filters vs. submission
+-------------------------------------------
+`python run_backtest.py my_strategy.py --assets BTC --intervals 5m` makes the
+backtester load ONLY 5m BTC data, which is much faster for iteration. But the
+final scoring run is UNFILTERED — the judge loads every asset and every
+interval. Your submitted strategy must filter markets itself (as above);
+the CLI filter does NOT carry over to scoring.
 
 HOW TO RUN
 ----------

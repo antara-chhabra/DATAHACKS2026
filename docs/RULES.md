@@ -78,3 +78,15 @@ Strategies that violate these will be disqualified before scoring.
 - All submissions run against the same test set, with the same starting cash, in the same engine version.
 
 See [SCORING.md](SCORING.md) for the ranking formula.
+
+## 12. Dev-loop flags (not for submission — for your iteration speed only)
+
+`run_backtest.py` accepts these optional flags that **reduce which data gets loaded**:
+
+| Flag | Example | Effect |
+|---|---|---|
+| `--hours N` | `--hours 4` | Load only the last N hours of data |
+| `--assets A [B ...]` | `--assets BTC` | Load only the listed assets (`BTC`, `ETH`, `SOL`) |
+| `--intervals I [J ...]` | `--intervals 5m` | Load only the listed intervals (`5m`, `15m`, `hourly`) |
+
+Final scoring on the held-out test set is **always unfiltered** — your strategy is evaluated on every market across every interval and every asset. These flags are only for speeding up your own iteration on train/validation.

@@ -644,12 +644,15 @@ def build_timeline(
     del binance_df, chainlink_df
     import gc
 
-    # Filter books_df to requested assets too (skip parsing SOL/ETH order books)
-    if assets and not books_df.empty and "market_slug" in books_df.columns:
-        asset_set = {a.upper() for a in assets}
-        books_df = books_df[books_df["market_slug"].apply(
-            lambda s: _asset_from_slug(s) in asset_set
-        )]
+    # Filter books_df to slugs actually in scope. After interval+asset
+    # filtering on prices_df, `lifecycles` is the authoritative list of
+    # markets the engine will see. Books for any other slug are wasted
+    # parse work. (Previously only --assets was applied here, so filtering
+    # by --intervals didn't give any book-parse speedup.)
+    if not books_df.empty and "market_slug" in books_df.columns:
+        lifecycle_slugs = {lc.market_slug for lc in lifecycles}
+        if lifecycle_slugs:
+            books_df = books_df[books_df["market_slug"].isin(lifecycle_slugs)]
 
     # Pre-index order books by slug for efficient lookup.
     # Build pre-parsed book snapshots indexed by (slug, ts) for O(1) forward-fill.
