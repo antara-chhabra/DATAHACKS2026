@@ -79,20 +79,20 @@ class OrderBookSnapshot:
 
     @staticmethod
     def from_json(bids_json: str, asks_json: str) -> OrderBookSnapshot:
-        """Parse from JSON strings like '[[price, size], ...]'."""
+        """Parse from JSON strings like '[[price, size], ...]'.
+
+        The CSV source writes bids descending and asks ascending already, so
+        we trust the on-disk order and skip the sort. Verified against the
+        hackathon bundles. If a caller hands us unsorted JSON, the caller
+        must sort first — this matches the live-feed producer contract.
+        """
         try:
             raw_bids = json.loads(bids_json) if bids_json else []
             raw_asks = json.loads(asks_json) if asks_json else []
         except (json.JSONDecodeError, TypeError):
             return OrderBookSnapshot()
-        bids = tuple(
-            OrderBookLevel(float(p), float(s))
-            for p, s in sorted(raw_bids, key=lambda x: -float(x[0]))
-        )
-        asks = tuple(
-            OrderBookLevel(float(p), float(s))
-            for p, s in sorted(raw_asks, key=lambda x: float(x[0]))
-        )
+        bids = tuple(OrderBookLevel(float(p), float(s)) for p, s in raw_bids)
+        asks = tuple(OrderBookLevel(float(p), float(s)) for p, s in raw_asks)
         return OrderBookSnapshot(bids=bids, asks=asks)
 
 

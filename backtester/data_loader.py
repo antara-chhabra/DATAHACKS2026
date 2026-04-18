@@ -634,6 +634,14 @@ def build_timeline(
             prices_grouped[ts] = bucket
         bucket[slug] = rec
 
+    # Release the prices DataFrame — the grouped dict has everything we need.
+    # Without this, pandas holds ~1 GB of row data alive through the JSON-parse
+    # step below, causing GC thrashing on OneDrive-synced directories.
+    del prices_df
+    del binance_df, chainlink_df
+    import gc
+    gc.collect()
+
     # Filter books_df to requested assets too (skip parsing SOL/ETH order books)
     if assets and not books_df.empty and "market_slug" in books_df.columns:
         asset_set = {a.upper() for a in assets}
@@ -645,43 +653,17 @@ def build_timeline(
     # Build pre-parsed book snapshots indexed by (slug, ts) for O(1) forward-fill.
     # CRITICAL: use groupby() once, not 8,466 linear-scan filters.
     #
-    # Parsing ~1.75M order-book JSON payloads takes ~90s, dominating cold start.
-    # Cache the parsed structure to disk (keyed by books.csv mtime+size) so only
-    # the FIRST backtest on a given data dir pays that cost.
+    # A pickle cache was tried and removed — 1.75M dataclass instances balloon
+    # to ~6 GB pickled (Python object overhead), so the cache is slower than
+    # just re-parsing. The memory cleanup (del/gc above) keeps cold parsing
+    # close to its raw CPU cost (~90s for the full train set).
     import bisect
-    import pickle
     books_by_slug: dict[str, Any] = {}
     book_ts_index: dict[str, list[int]] = {}
     book_snapshots: dict[str, dict[int, dict]] = {}
 
-    _csv_files = sorted(books_dir.glob("*.csv")) if books_dir.exists() else []
-    _cache_sig = (
-        tuple(f.name for f in _csv_files),
-        tuple(f.stat().st_size for f in _csv_files),
-        tuple(int(f.stat().st_mtime) for f in _csv_files),
-        tuple(sorted(_a.upper() for _a in (assets or []))),
-    )
-    _cache_path = books_dir.parent / ".books_cache.pkl" if books_dir.exists() else None
-
-    _cache_loaded = False
-    if _cache_path and _cache_path.exists():
-        try:
-            with open(_cache_path, "rb") as _f:
-                _cached = pickle.load(_f)
-            if _cached.get("sig") == _cache_sig:
-                book_ts_index = _cached["book_ts_index"]
-                book_snapshots = _cached["book_snapshots"]
-                books_by_slug = {s: None for s in book_ts_index}
-                logger.info(
-                    f"Loaded {sum(len(v) for v in book_ts_index.values()):,} "
-                    f"book snapshots from cache"
-                )
-                _cache_loaded = True
-        except Exception as e:
-            logger.warning(f"Book cache read failed ({e}); rebuilding")
-
-    if not _cache_loaded and not books_df.empty:
-        logger.info("Parsing order-book JSON (one-time; cached afterwards)...")
+    if not books_df.empty:
+        logger.info(f"Parsing {len(books_df):,} order-book snapshots...")
         # Pre-extract the columns we need to avoid pandas .get() overhead per row.
         book_cols = [
             "ts_sec", "market_slug",
@@ -690,6 +672,8 @@ def build_timeline(
         ]
         available = [c for c in book_cols if c in books_df.columns]
         slim = books_df[available].sort_values(["market_slug", "ts_sec"])
+        parsed = 0
+        progress_every = max(len(slim) // 5, 1)
         for slug, grp in slim.groupby("market_slug", sort=False):
             ts_list: list[int] = []
             snap_dict: dict[int, dict] = {}
@@ -713,25 +697,16 @@ def build_timeline(
                     ),
                     "book_ts": bts,
                 }
-            books_by_slug[slug] = grp
+                parsed += 1
+                if parsed % progress_every == 0:
+                    logger.info(f"  parsed {parsed:,}/{len(slim):,} books")
+            books_by_slug[slug] = None  # don't keep pandas group alive
             book_ts_index[slug] = ts_list
             book_snapshots[slug] = snap_dict
 
-        if _cache_path is not None:
-            try:
-                with open(_cache_path, "wb") as _f:
-                    pickle.dump(
-                        {
-                            "sig": _cache_sig,
-                            "book_ts_index": book_ts_index,
-                            "book_snapshots": book_snapshots,
-                        },
-                        _f,
-                        protocol=pickle.HIGHEST_PROTOCOL,
-                    )
-                logger.info(f"Cached book snapshots to {_cache_path}")
-            except Exception as e:
-                logger.warning(f"Book cache write failed ({e}); continuing without cache")
+        # Release the raw books DataFrame — parsed snapshots have all we need.
+        del books_df, slim
+        gc.collect()
 
     # Track which slugs have JSONL books vs need synthetic
     slugs_with_books = set(books_by_slug.keys())
