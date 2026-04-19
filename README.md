@@ -37,8 +37,8 @@ python download_data.py
 ### ▶️ Run Backtests
 
 ```bash
-python run_backtest.py my_strategy.py
-python run_backtest.py my_strategy.py --data data/validation/
+python run_backtest.py aggressive_edge.py
+python run_backtest.py aggressive_edge.py --data data/validation/
 ```
 
 ---
@@ -79,7 +79,7 @@ marimo run analytics.py --port 2718
 
 ## 🧠 Strategy — `AggressiveEdgeV3`
 
-Implemented in `my_strategy.py`, combining **arbitrage + directional signals**.
+Implemented in `aggressive_edge.py`, combining **arbitrage + directional signals**. This file is located in strategies.
 
 ### Arbitrage
 
