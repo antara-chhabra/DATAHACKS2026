@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#000000"/>
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00FFA3"/>
+      <stop offset="100%" stop-color="#03E1FF"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00FFA3"/>
+      <stop offset="50%" stop-color="#03E1FF"/>
+      <stop offset="100%" stop-color="#DC1FFF"/>
+    </linearGradient>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9945FF"/>
+      <stop offset="100%" stop-color="#DC1FFF"/>
+    </linearGradient>
+    <clipPath id="circ">
+      <circle cx="100" cy="100" r="100"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#circ)">
+    <!-- Top stripe -->
+    <polygon points="38,58 148,58 162,76 52,76" fill="url(#g1)"/>
+    <!-- Middle stripe -->
+    <polygon points="38,89 148,89 162,107 52,107" fill="url(#g2)"/>
+    <!-- Bottom stripe -->
+    <polygon points="38,120 148,120 162,138 52,138" fill="url(#g3)"/>
+  </g>
+</svg>

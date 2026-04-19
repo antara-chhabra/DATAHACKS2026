@@ -1,0 +1,118 @@
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.assetCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.assetCard:hover { transform: translateY(-2px); border-color: var(--lavender-mid); }
+
+.assetCardSelected {
+  border-color: var(--asset-color) !important;
+  background: var(--asset-bg) !important;
+}
+
+.coinImg {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-bottom: 4px;
+}
+
+.assetName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.assetTicker {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.assetPnl {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.detail {
+  border: 1.5px solid;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.detailStats {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+}
+
+.dstat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px;
+  border-right: 1px solid var(--border);
+}
+
+.dstat:last-child { border-right: none; }
+
+.dstatVal {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.dstatLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.trait {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.detailDesc {
+  font-size: 12px;
+  color: var(--text-mid);
+  line-height: 1.6;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 16px 0 4px;
+  font-style: italic;
+}

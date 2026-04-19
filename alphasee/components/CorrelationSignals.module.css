@@ -1,0 +1,173 @@
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  font-family: 'Roboto Mono', monospace;
+  letter-spacing: 0.02em;
+}
+
+.tab:hover { border-color: var(--lavender-mid); color: var(--text-main); }
+
+.tabActive {
+  border-color: var(--lavender-mid) !important;
+  background: var(--lavender-light) !important;
+  color: var(--purple-dark) !important;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.textBlock {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--lavender-light);
+}
+
+.blockTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--purple-dark);
+  margin-bottom: 8px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.blockBody {
+  font-size: 12px;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.twoChart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 800px) {
+  .twoChart { grid-template-columns: 1fr; }
+}
+
+.chartBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chartTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.chartSub {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: 'Roboto Mono', monospace;
+  margin-bottom: 4px;
+}
+
+.miniLegend {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'Roboto Mono', monospace;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--lavender);
+  background: var(--lavender-light);
+  font-size: 12px;
+  color: var(--text-mid);
+  line-height: 1.6;
+}
+
+.calloutIcon {
+  color: var(--lavender-mid);
+  flex-shrink: 0;
+  font-size: 16px;
+  margin-top: 1px;
+}
+
+/* Correlation matrix */
+.corrMatrix {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-card);
+}
+
+.corrTitle {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.corrRow {
+  display: grid;
+  grid-template-columns: 160px 1fr 64px;
+  align-items: center;
+  gap: 12px;
+}
+
+.corrPair {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+  font-family: 'Roboto Mono', monospace;
+}
+
+.corrBarTrack {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.corrBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s;
+}
+
+.corrVal {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: right;
+}

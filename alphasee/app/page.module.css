@@ -1,0 +1,215 @@
+.landing {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.bgImages {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.coinWrap {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.coinWrapBtc {
+  top: -40px;
+  left: -60px;
+  transform: rotate(-12deg);
+}
+
+.coinWrapEth {
+  bottom: -30px;
+  right: -40px;
+  transform: rotate(10deg);
+}
+
+.coinWrapSol {
+  top: 50%;
+  right: 8%;
+  transform: translateY(-55%) rotate(-6deg);
+}
+
+.coinBg {
+  border-radius: 50%;
+  object-fit: contain;
+  filter: saturate(0.7) brightness(1.05);
+  opacity: 0.22;
+  animation: floatCoin 6s ease-in-out infinite;
+}
+
+.coinBtc { width: 480px; height: 480px; }
+.coinEth { width: 400px; height: 400px; animation-delay: -2s; }
+.coinSol { width: 340px; height: 340px; animation-delay: -4s; }
+
+.coinLabel {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--lavender-mid);
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+@keyframes floatCoin {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-12px) scale(1.02); }
+}
+
+.hero {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  padding: 0 24px;
+  max-width: 680px;
+}
+
+.badge {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--purple-dark);
+  background: var(--lavender-light);
+  border: 1px solid var(--lavender);
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+
+.title {
+  font-size: clamp(64px, 10vw, 96px);
+  font-weight: 700;
+  color: var(--purple-heading);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.sub {
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--text-mid);
+  line-height: 1.6;
+  max-width: 420px;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 14px 36px;
+  background: var(--purple-dark);
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background 0.15s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+
+[data-theme="dark"] .cta { color: #0d0b1a; }
+
+.cta:hover {
+  background: var(--lavender-mid);
+  transform: translateY(-1px);
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 36px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 28px;
+}
+
+.statVal {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--purple-dark);
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.statDivider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+}
+
+/* Coin showcase row */
+.coinRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.coinChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--coin-color, var(--border));
+  background: var(--bg-card);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--coin-color, #7c3aed) 15%, transparent);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.coinChip:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--coin-color, #7c3aed) 25%, transparent);
+}
+
+.chipImg {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.chipTicker {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+  letter-spacing: 0.08em;
+}
+
+.chipPnl {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 2px;
+}

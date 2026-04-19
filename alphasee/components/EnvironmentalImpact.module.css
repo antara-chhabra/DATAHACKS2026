@@ -1,0 +1,168 @@
+.intro {
+  font-size: 13px;
+  color: var(--text-mid);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .twoCol { grid-template-columns: 1fr; }
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.colHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coinImg {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.colTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.colSub {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'Roboto Mono', monospace;
+}
+
+.chartWrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 4px;
+  background: var(--bg-card);
+}
+
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.insightCard {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: var(--bg-card);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.insightCard:hover {
+  border-color: var(--lavender-mid);
+  background: var(--lavender-light);
+}
+
+.insightHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.insightStat {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.insightTag {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  flex: 1;
+}
+
+.insightChevron {
+  font-size: 9px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.insightTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.insightDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-top: 8px;
+  animation: slideDown 0.18s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mock strategy return section */
+.mockStrategyWrap {
+  border: 1.5px dashed var(--lavender-mid);
+  border-radius: 12px;
+  padding: 16px 20px;
+  background: var(--lavender-light);
+}
+
+.mockTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--purple-dark);
+  margin-bottom: 6px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.mockIcon {
+  color: var(--lavender-mid);
+}
+
+.mockDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.mockChart {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 8px 4px;
+}
+
+.mockLegend {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'Roboto Mono', monospace;
+}

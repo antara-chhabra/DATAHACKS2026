@@ -1,0 +1,115 @@
+.lead {
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.markets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.market {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  position: relative;
+  transition: border-color 0.15s;
+}
+
+.marketHovered { border-color: var(--lavender-mid); }
+
+.marketTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.marketLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.edgeBadge {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px;
+  background: color-mix(in srgb, #10b981 18%, var(--bg-card));
+  color: var(--green);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.noEdgeBadge {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px;
+  background: var(--lavender-light);
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.barLabel {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  width: 22px;
+}
+
+.barTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.barVal {
+  font-size: 11px;
+  color: var(--text-muted);
+  width: 28px;
+  text-align: right;
+}
+
+.tooltip {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  color: var(--purple-dark);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.explainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.expItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.expIcon { font-size: 8px; }

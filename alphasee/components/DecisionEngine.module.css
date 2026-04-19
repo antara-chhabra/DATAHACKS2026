@@ -1,0 +1,175 @@
+.signals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.signal {
+  border-radius: 8px;
+  padding: 12px 14px;
+  border: 1.5px solid;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  background: transparent;
+  width: 100%;
+}
+
+.signal:hover { transform: translateY(-1px); }
+
+.signalActive {
+  border-color: #a7f3d0;
+  background: color-mix(in srgb, #10b981 8%, var(--bg-card));
+}
+
+.signalInactive {
+  border-color: var(--border);
+  background: var(--bg-card);
+}
+
+.sigTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sigLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.dotGreen { background: var(--green); box-shadow: 0 0 6px #10b98166; }
+.dotGray { background: #d1d5db; }
+
+.sigLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.sigSource {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-top: 1px;
+}
+
+.badge {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.badgeActive { background: color-mix(in srgb, #10b981 20%, var(--bg-card)); color: var(--green); }
+.badgeInactive { background: var(--lavender-light); color: var(--text-muted); }
+
+.sigDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.progress {
+  margin-bottom: 14px;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.progressLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.progressCount {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--purple-dark);
+}
+
+.progressBar {
+  display: flex;
+  gap: 4px;
+}
+
+.progressSeg {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  transition: background 0.2s;
+}
+
+.progressSegFill { background: var(--lavender-mid); }
+
+.output {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1.5px solid;
+}
+
+.outputYes {
+  border-color: color-mix(in srgb, #10b981 40%, var(--border));
+  background: color-mix(in srgb, #10b981 8%, var(--bg-card));
+}
+
+.outputNo {
+  border-color: var(--border);
+  background: var(--bg-card);
+}
+
+.outputDot {
+  font-size: 20px;
+  color: var(--green);
+  line-height: 1;
+  animation: pulse 2s infinite;
+}
+
+.outputDotGray {
+  font-size: 20px;
+  color: #d1d5db;
+  line-height: 1;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.outputLabel {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  letter-spacing: 0.06em;
+}
+
+.outputSub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
