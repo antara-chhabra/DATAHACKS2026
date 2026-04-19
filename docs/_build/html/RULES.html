@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Competition Rules &mdash; DataHacks 2026 — Polymarket Analytics 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DataHacks 2026 — Polymarket Analytics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="findings.html">Key Findings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methodology.html">Methodology</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DataHacks 2026 — Polymarket Analytics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Competition Rules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/RULES.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="competition-rules">
+<h1>Competition Rules<a class="headerlink" href="#competition-rules" title="Link to this heading"></a></h1>
+<section id="capital">
+<h2>1. Capital<a class="headerlink" href="#capital" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Starting cash:</strong> $10,000 USDC (simulated).</p></li>
+<li><p>No deposits or withdrawals during the run.</p></li>
+<li><p>Only the final portfolio value counts - see <a class="reference internal" href="SCORING.html"><span class="std std-doc">SCORING.md</span></a>.</p></li>
+</ul>
+</section>
+<section id="position-limits">
+<h2>2. Position limits<a class="headerlink" href="#position-limits" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Max 500 shares per token per market.</strong> YES and NO are separate tokens, so the practical max per market is 500 YES + 500 NO = 1,000 shares combined.</p></li>
+<li><p>If you submit an order that would exceed this limit, it is <strong>partially filled</strong> up to the cap or <strong>rejected</strong> depending on the engine’s constraint - inspect <code class="docutils literal notranslate"><span class="pre">on_fill</span></code> vs. order-rejection logging.</p></li>
+</ul>
+</section>
+<section id="no-short-selling">
+<h2>3. No short selling<a class="headerlink" href="#no-short-selling" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>You can only <strong>SELL tokens you already own.</strong></p></li>
+<li><p>Attempting to sell shares you don’t have → order rejected.</p></li>
+<li><p>To bet against YES, buy NO. To exit a YES position, sell YES.</p></li>
+</ul>
+</section>
+<section id="execution-latency">
+<h2>4. Execution latency<a class="headerlink" href="#execution-latency" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Orders submitted at tick T <strong>fill at tick T+1</strong> (1-second delay).</p></li>
+<li><p>The engine uses the order book as of tick T+1 to match your order, simulating real-world latency.</p></li>
+<li><p>Your strategy cannot peek at tick T+1’s state before submitting.</p></li>
+</ul>
+</section>
+<section id="stale-book-guard">
+<h2>5. Stale-book guard<a class="headerlink" href="#stale-book-guard" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>If the most recent order book snapshot is <strong>more than 5 seconds old</strong>, orders against that market are <strong>rejected</strong>.</p></li>
+<li><p>Rejections are counted in the report (<code class="docutils literal notranslate"><span class="pre">Rejected:</span> <span class="pre">N</span></code>).</p></li>
+<li><p>This prevents exploiting known data gaps.</p></li>
+</ul>
+</section>
+<section id="walk-the-book-execution">
+<h2>6. Walk-the-book execution<a class="headerlink" href="#walk-the-book-execution" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>BUY orders walk the book up to <code class="docutils literal notranslate"><span class="pre">limit_price</span></code>:</p>
+<ul>
+<li><p>If level 1 has enough size → fill fully at level 1.</p></li>
+<li><p>If level 1 depletes → fill the rest at level 2, 3, etc., until you hit your <code class="docutils literal notranslate"><span class="pre">limit_price</span></code> or the book is exhausted.</p></li>
+</ul>
+</li>
+<li><p>SELL orders walk down similarly.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limit_price=None</span></code> is a market order (take all liquidity up to whatever price).</p></li>
+<li><p><strong>Multiple orders on the same tick see depleted liquidity from earlier orders.</strong> The engine processes orders within a tick in the order they are returned from <code class="docutils literal notranslate"><span class="pre">on_tick</span></code>.</p></li>
+</ul>
+</section>
+<section id="settlement">
+<h2>7. Settlement<a class="headerlink" href="#settlement" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Each market resolves at its <code class="docutils literal notranslate"><span class="pre">end_ts</span></code>.</p></li>
+<li><p><strong>YES</strong> pays $1 if the underlying asset’s Chainlink price at <code class="docutils literal notranslate"><span class="pre">end_ts</span></code> &gt;= price at <code class="docutils literal notranslate"><span class="pre">start_ts</span></code>, else $0.</p></li>
+<li><p><strong>NO</strong> is the inverse.</p></li>
+<li><p>Settlement payouts are added to your <code class="docutils literal notranslate"><span class="pre">cash</span></code> balance automatically and <code class="docutils literal notranslate"><span class="pre">on_settlement</span></code> is called on your strategy.</p></li>
+</ul>
+</section>
+<section id="submission-format">
+<h2>8. Submission format<a class="headerlink" href="#submission-format" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Submit <strong>one <code class="docutils literal notranslate"><span class="pre">.py</span></code> file</strong> containing <strong>one class</strong> that subclasses <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code>.</p></li>
+<li><p>File name suggestion: <code class="docutils literal notranslate"><span class="pre">{teamname}_strategy.py</span></code>.</p></li>
+<li><p>The engine instantiates your class once with no args and calls <code class="docutils literal notranslate"><span class="pre">on_tick()</span></code> every second.</p></li>
+</ul>
+</section>
+<section id="allowed-imports">
+<h2>9. Allowed imports<a class="headerlink" href="#allowed-imports" title="Link to this heading"></a></h2>
+<p>Your strategy may import from:</p>
+<ul class="simple">
+<li><p><strong>Python standard library</strong></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">numpy</span></code></strong></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">pandas</span></code></strong></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">scipy</span></code></strong></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">backtester</span></code></strong> (only the public symbols - <code class="docutils literal notranslate"><span class="pre">BaseStrategy</span></code>, <code class="docutils literal notranslate"><span class="pre">MarketState</span></code>, <code class="docutils literal notranslate"><span class="pre">MarketView</span></code>, <code class="docutils literal notranslate"><span class="pre">Order</span></code>, <code class="docutils literal notranslate"><span class="pre">Side</span></code>, <code class="docutils literal notranslate"><span class="pre">Token</span></code>, <code class="docutils literal notranslate"><span class="pre">Fill</span></code>, <code class="docutils literal notranslate"><span class="pre">Settlement</span></code>, <code class="docutils literal notranslate"><span class="pre">OrderBookSnapshot</span></code>, <code class="docutils literal notranslate"><span class="pre">OrderBookLevel</span></code>, <code class="docutils literal notranslate"><span class="pre">PositionView</span></code>)</p></li>
+</ul>
+<p>Any other import may cause disqualification.</p>
+</section>
+<section id="forbidden-behavior">
+<h2>10. Forbidden behavior<a class="headerlink" href="#forbidden-behavior" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>No filesystem access.</strong> Do not read from or write to disk.</p></li>
+<li><p><strong>No network access.</strong> Do not open sockets or make HTTP requests.</p></li>
+<li><p><strong>No subprocess / shell.</strong> Do not spawn processes.</p></li>
+<li><p><strong>No introspection of engine internals.</strong> Don’t reach into private state; only use what’s provided in <code class="docutils literal notranslate"><span class="pre">MarketState</span></code>.</p></li>
+</ul>
+<p>Strategies that violate these will be disqualified before scoring.</p>
+</section>
+<section id="evaluation">
+<h2>11. Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Strategies are run against a <strong>held-out test dataset</strong> that was not provided during the competition.</p></li>
+<li><p>The test set is collected after the submission deadline, from the same live data pipeline.</p></li>
+<li><p>All submissions run against the same test set, with the same starting cash, in the same engine version.</p></li>
+</ul>
+<p>See <a class="reference internal" href="SCORING.html"><span class="std std-doc">SCORING.md</span></a> for the ranking formula.</p>
+</section>
+<section id="dev-loop-flags-not-for-submission-for-your-iteration-speed-only">
+<h2>12. Dev-loop flags (not for submission - for your iteration speed only)<a class="headerlink" href="#dev-loop-flags-not-for-submission-for-your-iteration-speed-only" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">run_backtest.py</span></code> accepts these optional flags that <strong>reduce which data gets loaded</strong>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--hours</span> <span class="pre">N</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--hours</span> <span class="pre">4</span></code></p></td>
+<td><p>Load only the last N hours of data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--assets</span> <span class="pre">A</span> <span class="pre">[B</span> <span class="pre">...]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--assets</span> <span class="pre">BTC</span></code></p></td>
+<td><p>Load only the listed assets (<code class="docutils literal notranslate"><span class="pre">BTC</span></code>, <code class="docutils literal notranslate"><span class="pre">ETH</span></code>, <code class="docutils literal notranslate"><span class="pre">SOL</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--intervals</span> <span class="pre">I</span> <span class="pre">[J</span> <span class="pre">...]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--intervals</span> <span class="pre">5m</span></code></p></td>
+<td><p>Load only the listed intervals (<code class="docutils literal notranslate"><span class="pre">5m</span></code>, <code class="docutils literal notranslate"><span class="pre">15m</span></code>, <code class="docutils literal notranslate"><span class="pre">hourly</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Final scoring on the held-out test set is <strong>always unfiltered</strong> - your strategy is evaluated on every market across every interval and every asset. These flags are only for speeding up your own iteration on train/validation.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Team TQT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

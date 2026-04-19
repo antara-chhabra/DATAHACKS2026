@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Format Reference &mdash; DataHacks 2026 — Polymarket Analytics 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            DataHacks 2026 — Polymarket Analytics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="findings.html">Key Findings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methodology.html">Methodology</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DataHacks 2026 — Polymarket Analytics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Data Format Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/DATA_FORMAT.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="data-format-reference">
+<h1>Data Format Reference<a class="headerlink" href="#data-format-reference" title="Link to this heading"></a></h1>
+<p>This document is the authoritative schema reference for every data source in the hackathon bundles.</p>
+<section id="conventions">
+<h2>Conventions<a class="headerlink" href="#conventions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>All timestamps:</strong> <code class="docutils literal notranslate"><span class="pre">timestamp_us</span></code> = int64 epoch microseconds in <strong>UTC</strong>.</p>
+<ul>
+<li><p>Convert to unix seconds: <code class="docutils literal notranslate"><span class="pre">ts_sec</span> <span class="pre">=</span> <span class="pre">timestamp_us</span> <span class="pre">//</span> <span class="pre">1_000_000</span></code></p></li>
+<li><p>Convert to Python datetime: <code class="docutils literal notranslate"><span class="pre">datetime.fromtimestamp(timestamp_us</span> <span class="pre">/</span> <span class="pre">1e6,</span> <span class="pre">tz=timezone.utc)</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Sampling:</strong> 1 snapshot per second per market (train and validation bundles are pre-downsampled).</p></li>
+<li><p><strong>Currency:</strong> USD throughout.</p></li>
+<li><p><strong>Price units:</strong> Polymarket YES/NO prices are in USD (range 0.00 to 1.00). Binance LOB prices are in USD per unit of the base asset. Chainlink oracle prices are in USD.</p></li>
+</ul>
+</section>
+<section id="directory-layout-after-python-download-data-py">
+<h2>Directory layout after <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">download_data.py</span></code><a class="headerlink" href="#directory-layout-after-python-download-data-py" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>data/
+├── train/
+│   ├── polymarket.db               # SQLite
+│   ├── polymarket_books/
+│   │   └── orderbooks.csv          # Full CLOB depth, 1s cadence
+│   └── binance_lob/
+│       ├── btcusdt.parquet         # 10-level LOB
+│       ├── ethusdt.parquet
+│       └── solusdt.parquet
+└── validation/
+    ├── polymarket.db
+    ├── polymarket_books/orderbooks.csv
+    └── binance_lob/{btcusdt,ethusdt,solusdt}.parquet
+</pre></div>
+</div>
+<p>Both bundles have identical schemas; only the time range differs.</p>
+</section>
+<hr class="docutils" />
+<section id="polymarket-db-sqlite">
+<h2><code class="docutils literal notranslate"><span class="pre">polymarket.db</span></code> (SQLite)<a class="headerlink" href="#polymarket-db-sqlite" title="Link to this heading"></a></h2>
+<p>WAL mode. Three tables of interest.</p>
+<section id="table-market-prices">
+<h3>Table: <code class="docutils literal notranslate"><span class="pre">market_prices</span></code><a class="headerlink" href="#table-market-prices" title="Link to this heading"></a></h3>
+<p>Top-of-book snapshots for every active Polymarket prediction market, 1 row per market per second.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timestamp_us</span></code></p></td>
+<td><p>INTEGER</p></td>
+<td><p>Epoch microseconds (UTC)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">interval</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;15m&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;hourly&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">market_slug</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>Unique market id (e.g. <code class="docutils literal notranslate"><span class="pre">btc-updown-5m-1776283500</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">condition_id</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>Polymarket condition ID</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">yes_token_id</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>YES token contract ID</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_token_id</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>NO token contract ID</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">yes_price</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>YES mid-price = (yes_bid + yes_ask) / 2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_price</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>NO mid-price</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">yes_bid</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>Best bid for YES token</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">yes_ask</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>Best ask for YES token</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_bid</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>Best bid for NO token</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_ask</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>Best ask for NO token</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">volume</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>Reserved; currently 0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">liquidity</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>Reserved; currently 0</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example load:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span><span class="o">,</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;data/train/polymarket.db&quot;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM market_prices WHERE interval=&#39;5m&#39; LIMIT 10000&quot;</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="table-rtds-prices">
+<h3>Table: <code class="docutils literal notranslate"><span class="pre">rtds_prices</span></code><a class="headerlink" href="#table-rtds-prices" title="Link to this heading"></a></h3>
+<p>Chainlink on-chain oracle reference prices. Used by the engine for settlement.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timestamp_us</span></code></p></td>
+<td><p>INTEGER</p></td>
+<td><p>Epoch microseconds (UTC)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">source</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>Always <code class="docutils literal notranslate"><span class="pre">&quot;chainlink&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">symbol</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;BTC/USD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ETH/USD&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;SOL/USD&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">price</span></code></p></td>
+<td><p>REAL</p></td>
+<td><p>Oracle price in USD</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">raw_payload</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>JSON with full-precision raw oracle value</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="table-market-outcomes">
+<h3>Table: <code class="docutils literal notranslate"><span class="pre">market_outcomes</span></code><a class="headerlink" href="#table-market-outcomes" title="Link to this heading"></a></h3>
+<p>Resolution records. Populated when a market settles.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">market_slug</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>Market identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">interval</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;15m&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;hourly&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">question</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p>Human-readable market question</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">status</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;resolved&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;pending&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">outcome</span></code></p></td>
+<td><p>TEXT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;YES&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;NO&quot;</span></code> (null if pending)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">end_ts</span></code></p></td>
+<td><p>INTEGER</p></td>
+<td><p>Market close time (unix seconds)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="polymarket-books-orderbooks-csv">
+<h2><code class="docutils literal notranslate"><span class="pre">polymarket_books/orderbooks.csv</span></code><a class="headerlink" href="#polymarket-books-orderbooks-csv" title="Link to this heading"></a></h2>
+<p>Full depth-of-book snapshots for every market, 1 row per market per second.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timestamp_us</span></code></p></td>
+<td><p>Epoch microseconds</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">interval</span></code></p></td>
+<td><p>Market interval (<code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;15m&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hourly&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">market_slug</span></code></p></td>
+<td><p>Market identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">yes_best_bid</span></code>, <code class="docutils literal notranslate"><span class="pre">yes_best_ask</span></code></p></td>
+<td><p>YES token top-of-book</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_best_bid</span></code>, <code class="docutils literal notranslate"><span class="pre">no_best_ask</span></code></p></td>
+<td><p>NO token top-of-book</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">yes_n_bids</span></code>, <code class="docutils literal notranslate"><span class="pre">yes_n_asks</span></code></p></td>
+<td><p>Number of price levels on each side of YES book</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_n_bids</span></code>, <code class="docutils literal notranslate"><span class="pre">no_n_asks</span></code></p></td>
+<td><p>Number of price levels on each side of NO book</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">yes_total_bid_size</span></code>, <code class="docutils literal notranslate"><span class="pre">yes_total_ask_size</span></code></p></td>
+<td><p>Sum of sizes across all YES levels</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_total_bid_size</span></code>, <code class="docutils literal notranslate"><span class="pre">no_total_ask_size</span></code></p></td>
+<td><p>Sum of sizes across all NO levels</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">yes_bids_json</span></code>, <code class="docutils literal notranslate"><span class="pre">yes_asks_json</span></code></p></td>
+<td><p>JSON array of <code class="docutils literal notranslate"><span class="pre">[price,</span> <span class="pre">size]</span></code> pairs, all levels</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_bids_json</span></code>, <code class="docutils literal notranslate"><span class="pre">no_asks_json</span></code></p></td>
+<td><p>JSON array of <code class="docutils literal notranslate"><span class="pre">[price,</span> <span class="pre">size]</span></code> pairs, all levels</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example load:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span><span class="o">,</span><span class="w"> </span><span class="nn">json</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/train/polymarket_books/orderbooks.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;yes_bids&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;yes_bids_json&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)</span>
+<span class="c1"># first row&#39;s YES bids: list of [price, size] pairs, sorted desc by price</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="binance-lob-parquet">
+<h2><code class="docutils literal notranslate"><span class="pre">binance_lob/*.parquet</span></code><a class="headerlink" href="#binance-lob-parquet" title="Link to this heading"></a></h2>
+<p>One file per asset: <code class="docutils literal notranslate"><span class="pre">btcusdt.parquet</span></code>, <code class="docutils literal notranslate"><span class="pre">ethusdt.parquet</span></code>, <code class="docutils literal notranslate"><span class="pre">solusdt.parquet</span></code>. Each contains 10-level limit order book snapshots from the Binance spot exchange, sampled at 1 second.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timestamp_us</span></code></p></td>
+<td><p>int64</p></td>
+<td><p>Epoch microseconds (UTC)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">event_time_ms</span></code></p></td>
+<td><p>int64</p></td>
+<td><p>Binance exchange event time (milliseconds since epoch)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">symbol</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;BTCUSDT&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ETHUSDT&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;SOLUSDT&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ask_price_1</span></code> .. <code class="docutils literal notranslate"><span class="pre">ask_price_10</span></code></p></td>
+<td><p>float64</p></td>
+<td><p>Ask prices, level 1 = best (lowest) ask</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ask_vol_1</span></code> .. <code class="docutils literal notranslate"><span class="pre">ask_vol_10</span></code></p></td>
+<td><p>float64</p></td>
+<td><p>Ask sizes in base-asset units</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">bid_price_1</span></code> .. <code class="docutils literal notranslate"><span class="pre">bid_price_10</span></code></p></td>
+<td><p>float64</p></td>
+<td><p>Bid prices, level 1 = best (highest) bid</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bid_vol_1</span></code> .. <code class="docutils literal notranslate"><span class="pre">bid_vol_10</span></code></p></td>
+<td><p>float64</p></td>
+<td><p>Bid sizes in base-asset units</p></td>
+</tr>
+</tbody>
+</table>
+<p>Snappy compression. Total of 44 columns per row (3 metadata + 40 LOB features - the “DeepLOB” format).</p>
+<p><strong>Example load:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;data/train/binance_lob/btcusdt.parquet&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;btc_mid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;ask_price_1&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;bid_price_1&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;btc_spread&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ask_price_1&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;bid_price_1&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="merging-datasets">
+<h2>Merging datasets<a class="headerlink" href="#merging-datasets" title="Link to this heading"></a></h2>
+<p>The backtester merges all data sources automatically. For your own analysis, join on the unix-second key:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span><span class="o">,</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># 1-second buckets everywhere</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_sec</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">&quot;timestamp_us&quot;</span><span class="p">):</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ts_sec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">//</span> <span class="mi">1_000_000</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;data/train/polymarket.db&quot;</span><span class="p">)</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">to_sec</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM market_prices&quot;</span><span class="p">,</span> <span class="n">conn</span><span class="p">))</span>
+
+<span class="n">btc</span> <span class="o">=</span> <span class="n">to_sec</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="s2">&quot;data/train/binance_lob/btcusdt.parquet&quot;</span><span class="p">))</span>
+<span class="n">btc_subset</span> <span class="o">=</span> <span class="n">btc</span><span class="p">[[</span><span class="s2">&quot;ts_sec&quot;</span><span class="p">,</span> <span class="s2">&quot;bid_price_1&quot;</span><span class="p">,</span> <span class="s2">&quot;ask_price_1&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;bid_price_1&quot;</span><span class="p">:</span> <span class="s2">&quot;btc_bid&quot;</span><span class="p">,</span> <span class="s2">&quot;ask_price_1&quot;</span><span class="p">:</span> <span class="s2">&quot;btc_ask&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">merged</span> <span class="o">=</span> <span class="n">prices</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">btc_subset</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;ts_sec&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Within the backtester, this merge is performed by <code class="docutils literal notranslate"><span class="pre">backtester.data_loader.build_timeline()</span></code> which returns a <code class="docutils literal notranslate"><span class="pre">BacktestData</span></code> object with a unified per-second timeline, market lifecycle map, and settlement prices.</p>
+</section>
+<hr class="docutils" />
+<section id="market-slug-format">
+<h2>Market slug format<a class="headerlink" href="#market-slug-format" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Interval</p></th>
+<th class="head"><p>Slug format</p></th>
+<th class="head"><p>Examples</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>5-minute</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{asset}-updown-5m-{epoch_seconds}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">btc-updown-5m-1776283500</span></code><br><code class="docutils literal notranslate"><span class="pre">sol-updown-5m-1776283500</span></code><br><code class="docutils literal notranslate"><span class="pre">eth-updown-5m-1776283500</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>15-minute</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{asset}-updown-15m-{epoch_seconds}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">btc-updown-15m-1776283500</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Hourly</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{asset}-up-or-down-{month}-{day}-{year}-{hour}{ampm}-et</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bitcoin-up-or-down-june-1-2025-12pm-et</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The slug prefix identifies the underlying asset:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">btc-</span></code> / <code class="docutils literal notranslate"><span class="pre">bitcoin-</span></code> → BTC</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sol-</span></code> / <code class="docutils literal notranslate"><span class="pre">solana-</span></code> → SOL</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eth-</span></code> / <code class="docutils literal notranslate"><span class="pre">ethereum-</span></code> → ETH</p></li>
+</ul>
+<p>The trailing integer in 5m/15m slugs is the market’s <strong>start time</strong> in unix seconds. The market settles exactly 5 or 15 minutes later at the Chainlink price.</p>
+</section>
+<hr class="docutils" />
+<section id="data-volume">
+<h2>Data volume<a class="headerlink" href="#data-volume" title="Link to this heading"></a></h2>
+<p>Approximate sizes (uncompressed, after extraction):</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Asset</p></th>
+<th class="head"><p>train</p></th>
+<th class="head"><p>validation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">polymarket.db</span></code></p></td>
+<td><p>~300 MB</p></td>
+<td><p>~150 MB</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">polymarket_books/orderbooks.csv</span></code></p></td>
+<td><p>~1.2 GB</p></td>
+<td><p>~600 MB</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">binance_lob/*.parquet</span></code> (all 3)</p></td>
+<td><p>~400 MB</p></td>
+<td><p>~200 MB</p></td>
+</tr>
+</tbody>
+</table>
+<p>The compressed <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> bundles are ~900 MB (train) and ~425 MB (validation).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Team TQT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
