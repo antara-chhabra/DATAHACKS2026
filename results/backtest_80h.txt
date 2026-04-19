@@ -1,0 +1,135 @@
+08:47:41 [backtester.data_loader] INFO: Time filter: last 80.0h (1775907938 - 1776195938)
+08:47:41 [backtester.data_loader] INFO: Loading market prices...
+08:47:42 [backtester.data_loader] INFO: Loading order books...
+08:48:07 [backtester.data_loader] INFO: Loading Binance LOB...
+08:48:08 [backtester.data_loader] INFO: Loading Chainlink prices...
+08:48:10 [backtester.data_loader] INFO: Found 3566 markets across ['5m', '15m', 'hourly']
+08:48:14 [backtester.data_loader] INFO: Computed 3566 settlements
+08:48:16 [backtester.data_loader] INFO: Parsing 42,027 order-book snapshots...
+08:48:16 [backtester.data_loader] INFO:   parsed 8,405/42,027 books
+08:48:17 [backtester.data_loader] INFO:   parsed 16,810/42,027 books
+08:48:18 [backtester.data_loader] INFO:   parsed 25,215/42,027 books
+08:48:18 [backtester.data_loader] INFO:   parsed 33,620/42,027 books
+08:48:19 [backtester.data_loader] INFO:   parsed 42,025/42,027 books
+08:48:19 [backtester.data_loader] INFO: Building timeline: 287996 seconds, 3566 markets
+08:48:19 [backtester.data_loader] INFO:   timeline build: 28,799/287,996 (10%, active=9)
+08:48:19 [backtester.data_loader] INFO:   timeline build: 57,598/287,996 (20%, active=9)
+08:48:19 [backtester.data_loader] INFO:   timeline build: 86,397/287,996 (30%, active=9)
+08:48:19 [backtester.data_loader] INFO:   timeline build: 115,196/287,996 (40%, active=9)
+08:48:20 [backtester.data_loader] INFO:   timeline build: 143,995/287,996 (50%, active=9)
+08:48:20 [backtester.data_loader] INFO:   timeline build: 172,794/287,996 (60%, active=9)
+08:48:20 [backtester.data_loader] INFO:   timeline build: 201,593/287,996 (70%, active=9)
+08:48:20 [backtester.data_loader] INFO:   timeline build: 230,392/287,996 (80%, active=9)
+08:48:20 [backtester.data_loader] INFO:   timeline build: 259,191/287,996 (90%, active=9)
+08:48:20 [backtester.data_loader] INFO:   timeline build: 287,990/287,996 (100%, active=9)
+08:48:20 [backtester.data_loader] INFO: Timeline built: 287996 ticks, 3566 markets
+08:48:21 [backtester.engine] INFO: Starting backtest: AggressiveEdgeV3 | 287996 ticks | $10,000 starting cash | 3566 markets
+08:48:25 [backtester.engine] INFO: Tick 3600 (idx 3599/287996) | ts=1775911542 | portfolio=$10,691.98 | trades=7 | settled=51
+08:48:29 [backtester.engine] INFO: Tick 7200 (idx 7199/287996) | ts=1775915142 | portfolio=$10,474.55 | trades=13 | settled=102
+08:48:33 [backtester.engine] INFO: Tick 10800 (idx 10799/287996) | ts=1775918742 | portfolio=$10,062.85 | trades=33 | settled=153
+08:48:37 [backtester.engine] INFO: Tick 14400 (idx 14399/287996) | ts=1775922342 | portfolio=$10,061.67 | trades=51 | settled=204
+08:48:41 [backtester.engine] INFO: Tick 18000 (idx 17999/287996) | ts=1775925942 | portfolio=$9,916.72 | trades=71 | settled=255
+08:48:46 [backtester.engine] INFO: Tick 21600 (idx 21599/287996) | ts=1775929542 | portfolio=$9,916.72 | trades=71 | settled=306
+08:48:50 [backtester.engine] INFO: Tick 25200 (idx 25199/287996) | ts=1775933142 | portfolio=$9,725.67 | trades=79 | settled=357
+08:48:54 [backtester.engine] INFO: Tick 28800 (idx 28799/287996) | ts=1775936742 | portfolio=$10,041.10 | trades=107 | settled=408
+08:48:58 [backtester.engine] INFO: Tick 32400 (idx 32399/287996) | ts=1775940342 | portfolio=$10,007.20 | trades=138 | settled=459
+08:49:03 [backtester.engine] INFO: Tick 36000 (idx 35999/287996) | ts=1775943942 | portfolio=$10,238.35 | trades=160 | settled=510
+08:49:07 [backtester.engine] INFO: Tick 39600 (idx 39599/287996) | ts=1775947542 | portfolio=$10,163.31 | trades=162 | settled=561
+08:49:11 [backtester.engine] INFO: Tick 43200 (idx 43199/287996) | ts=1775951142 | portfolio=$10,163.31 | trades=162 | settled=612
+08:49:16 [backtester.engine] INFO: Tick 46800 (idx 46799/287996) | ts=1775954742 | portfolio=$10,512.55 | trades=188 | settled=661
+08:49:21 [backtester.engine] INFO: Tick 50400 (idx 50399/287996) | ts=1775958342 | portfolio=$10,501.79 | trades=190 | settled=712
+08:49:25 [backtester.engine] INFO: Tick 54000 (idx 53999/287996) | ts=1775961942 | portfolio=$10,671.49 | trades=216 | settled=763
+08:49:29 [backtester.engine] INFO: Tick 57600 (idx 57599/287996) | ts=1775965542 | portfolio=$10,671.49 | trades=216 | settled=814
+08:49:34 [backtester.engine] INFO: Tick 61200 (idx 61199/287996) | ts=1775969142 | portfolio=$10,916.60 | trades=264 | settled=865
+08:49:39 [backtester.engine] INFO: Tick 64800 (idx 64799/287996) | ts=1775972742 | portfolio=$10,936.98 | trades=274 | settled=916
+08:49:44 [backtester.engine] INFO: Tick 68400 (idx 68399/287996) | ts=1775976342 | portfolio=$10,723.95 | trades=304 | settled=964
+08:49:49 [backtester.engine] INFO: Tick 72000 (idx 71999/287996) | ts=1775979942 | portfolio=$10,416.48 | trades=338 | settled=1015
+08:49:53 [backtester.engine] INFO: Tick 75600 (idx 75599/287996) | ts=1775983542 | portfolio=$10,460.76 | trades=348 | settled=1063
+08:49:58 [backtester.engine] INFO: Tick 79200 (idx 79199/287996) | ts=1775987142 | portfolio=$10,460.76 | trades=348 | settled=1102
+08:50:03 [backtester.engine] INFO: Tick 82800 (idx 82799/287996) | ts=1775990742 | portfolio=$10,460.76 | trades=348 | settled=1141
+08:50:07 [backtester.engine] INFO: Tick 86400 (idx 86399/287996) | ts=1775994342 | portfolio=$10,461.01 | trades=358 | settled=1186
+08:50:12 [backtester.engine] INFO: Tick 90000 (idx 89999/287996) | ts=1775997942 | portfolio=$9,614.45 | trades=398 | settled=1237
+08:50:16 [backtester.engine] INFO: Tick 93600 (idx 93599/287996) | ts=1776001542 | portfolio=$10,634.45 | trades=398 | settled=1282
+08:50:21 [backtester.engine] INFO: Tick 97200 (idx 97199/287996) | ts=1776005142 | portfolio=$10,593.88 | trades=410 | settled=1328
+08:50:26 [backtester.engine] INFO: Tick 100800 (idx 100799/287996) | ts=1776008742 | portfolio=$10,592.15 | trades=420 | settled=1379
+08:50:31 [backtester.engine] INFO: Tick 104400 (idx 104399/287996) | ts=1776012342 | portfolio=$10,598.02 | trades=433 | settled=1430
+08:50:35 [backtester.engine] INFO: Tick 108000 (idx 107999/287996) | ts=1776015942 | portfolio=$10,598.02 | trades=433 | settled=1481
+08:50:40 [backtester.engine] INFO: Tick 111600 (idx 111599/287996) | ts=1776019542 | portfolio=$10,624.84 | trades=448 | settled=1529
+08:50:45 [backtester.engine] INFO: Tick 115200 (idx 115199/287996) | ts=1776023142 | portfolio=$10,391.18 | trades=462 | settled=1580
+08:50:50 [backtester.engine] INFO: Tick 118800 (idx 118799/287996) | ts=1776026742 | portfolio=$10,391.18 | trades=462 | settled=1631
+08:50:54 [backtester.engine] INFO: Tick 122400 (idx 122399/287996) | ts=1776030342 | portfolio=$10,492.46 | trades=463 | settled=1676
+08:50:59 [backtester.engine] INFO: Tick 126000 (idx 125999/287996) | ts=1776033942 | portfolio=$10,492.46 | trades=463 | settled=1706
+08:51:04 [backtester.engine] INFO: Tick 129600 (idx 129599/287996) | ts=1776037542 | portfolio=$10,492.46 | trades=463 | settled=1733
+08:51:09 [backtester.engine] INFO: Tick 133200 (idx 133199/287996) | ts=1776041142 | portfolio=$10,482.43 | trades=499 | settled=1775
+08:51:14 [backtester.engine] INFO: Tick 136800 (idx 136799/287996) | ts=1776044742 | portfolio=$10,245.84 | trades=513 | settled=1811
+08:51:19 [backtester.engine] INFO: Tick 140400 (idx 140399/287996) | ts=1776048342 | portfolio=$10,245.84 | trades=513 | settled=1859
+08:51:24 [backtester.engine] INFO: Tick 144000 (idx 143999/287996) | ts=1776051942 | portfolio=$10,155.91 | trades=514 | settled=1907
+08:51:29 [backtester.engine] INFO: Tick 147600 (idx 147599/287996) | ts=1776055542 | portfolio=$10,155.91 | trades=514 | settled=1957
+08:51:34 [backtester.engine] INFO: Tick 151200 (idx 151199/287996) | ts=1776059142 | portfolio=$9,751.61 | trades=522 | settled=1998
+08:51:38 [backtester.engine] INFO: Tick 154800 (idx 154799/287996) | ts=1776062742 | portfolio=$10,006.73 | trades=543 | settled=2043
+08:51:43 [backtester.engine] INFO: Tick 158400 (idx 158399/287996) | ts=1776066342 | portfolio=$10,027.66 | trades=546 | settled=2092
+08:51:48 [backtester.engine] INFO: Tick 162000 (idx 161999/287996) | ts=1776069942 | portfolio=$10,087.12 | trades=566 | settled=2132
+08:51:53 [backtester.engine] INFO: Tick 165600 (idx 165599/287996) | ts=1776073542 | portfolio=$10,087.12 | trades=566 | settled=2178
+08:51:58 [backtester.engine] INFO: Tick 169200 (idx 169199/287996) | ts=1776077142 | portfolio=$10,087.12 | trades=566 | settled=2226
+08:52:04 [backtester.engine] INFO: Tick 172800 (idx 172799/287996) | ts=1776080742 | portfolio=$10,087.12 | trades=566 | settled=2274
+08:52:09 [backtester.engine] INFO: Tick 176400 (idx 176399/287996) | ts=1776084342 | portfolio=$9,989.12 | trades=576 | settled=2319
+08:52:14 [backtester.engine] INFO: Tick 180000 (idx 179999/287996) | ts=1776087942 | portfolio=$10,089.12 | trades=576 | settled=2361
+08:52:19 [backtester.engine] INFO: Tick 183600 (idx 183599/287996) | ts=1776091542 | portfolio=$10,250.80 | trades=591 | settled=2409
+08:52:24 [backtester.engine] INFO: Tick 187200 (idx 187199/287996) | ts=1776095142 | portfolio=$10,250.80 | trades=591 | settled=2448
+08:52:29 [backtester.engine] INFO: Tick 190800 (idx 190799/287996) | ts=1776098742 | portfolio=$10,432.63 | trades=592 | settled=2490
+08:52:34 [backtester.engine] INFO: Tick 194400 (idx 194399/287996) | ts=1776102342 | portfolio=$9,980.39 | trades=632 | settled=2535
+08:52:39 [backtester.engine] INFO: Tick 198000 (idx 197999/287996) | ts=1776105942 | portfolio=$10,403.64 | trades=634 | settled=2583
+08:52:45 [backtester.engine] INFO: Tick 201600 (idx 201599/287996) | ts=1776109542 | portfolio=$10,403.64 | trades=634 | settled=2628
+08:52:50 [backtester.engine] INFO: Tick 205200 (idx 205199/287996) | ts=1776113142 | portfolio=$10,403.64 | trades=634 | settled=2673
+08:52:55 [backtester.engine] INFO: Tick 208800 (idx 208799/287996) | ts=1776116742 | portfolio=$10,403.64 | trades=634 | settled=2713
+08:53:00 [backtester.engine] INFO: Tick 212400 (idx 212399/287996) | ts=1776120342 | portfolio=$10,467.20 | trades=644 | settled=2755
+08:53:06 [backtester.engine] INFO: Tick 216000 (idx 215999/287996) | ts=1776123942 | portfolio=$10,325.48 | trades=664 | settled=2803
+08:53:11 [backtester.engine] INFO: Tick 219600 (idx 219599/287996) | ts=1776127542 | portfolio=$10,584.64 | trades=676 | settled=2844
+08:53:16 [backtester.engine] INFO: Tick 223200 (idx 223199/287996) | ts=1776131142 | portfolio=$10,584.64 | trades=676 | settled=2883
+08:53:22 [backtester.engine] INFO: Tick 226800 (idx 226799/287996) | ts=1776134742 | portfolio=$10,865.48 | trades=678 | settled=2922
+08:53:27 [backtester.engine] INFO: Tick 230400 (idx 230399/287996) | ts=1776138342 | portfolio=$10,865.48 | trades=678 | settled=2934
+08:53:32 [backtester.engine] INFO: Tick 234000 (idx 233999/287996) | ts=1776141942 | portfolio=$10,865.48 | trades=678 | settled=2979
+08:53:38 [backtester.engine] INFO: Tick 237600 (idx 237599/287996) | ts=1776145542 | portfolio=$10,865.48 | trades=678 | settled=3027
+08:53:43 [backtester.engine] INFO: Tick 241200 (idx 241199/287996) | ts=1776149142 | portfolio=$10,865.48 | trades=678 | settled=3060
+08:53:48 [backtester.engine] INFO: Tick 244800 (idx 244799/287996) | ts=1776152742 | portfolio=$10,865.48 | trades=678 | settled=3099
+08:53:54 [backtester.engine] INFO: Tick 248400 (idx 248399/287996) | ts=1776156342 | portfolio=$10,865.48 | trades=678 | settled=3150
+08:53:59 [backtester.engine] INFO: Tick 252000 (idx 251999/287996) | ts=1776159942 | portfolio=$10,865.48 | trades=678 | settled=3195
+08:54:05 [backtester.engine] INFO: Tick 255600 (idx 255599/287996) | ts=1776163542 | portfolio=$10,865.48 | trades=678 | settled=3236
+08:54:10 [backtester.engine] INFO: Tick 259200 (idx 259199/287996) | ts=1776167142 | portfolio=$10,865.48 | trades=678 | settled=3257
+08:54:16 [backtester.engine] INFO: Tick 262800 (idx 262799/287996) | ts=1776170742 | portfolio=$10,843.96 | trades=680 | settled=3299
+08:54:21 [backtester.engine] INFO: Tick 266400 (idx 266399/287996) | ts=1776174342 | portfolio=$10,843.96 | trades=680 | settled=3341
+08:54:27 [backtester.engine] INFO: Tick 270000 (idx 269999/287996) | ts=1776177942 | portfolio=$11,081.22 | trades=682 | settled=3374
+08:54:32 [backtester.engine] INFO: Tick 273600 (idx 273599/287996) | ts=1776181542 | portfolio=$11,149.72 | trades=683 | settled=3413
+08:54:38 [backtester.engine] INFO: Tick 277200 (idx 277199/287996) | ts=1776185142 | portfolio=$11,149.72 | trades=683 | settled=3440
+08:54:43 [backtester.engine] INFO: Tick 280800 (idx 280799/287996) | ts=1776188742 | portfolio=$11,149.72 | trades=683 | settled=3467
+08:54:49 [backtester.engine] INFO: Tick 284400 (idx 284399/287996) | ts=1776192342 | portfolio=$11,092.59 | trades=693 | settled=3506
+08:54:55 [backtester.engine] INFO: Tick 287996 (idx 287995/287996) | ts=1776195938 | portfolio=$12,161.62 | trades=705 | settled=3557
+08:54:55 [backtester.engine] INFO: Backtest complete: AggressiveEdgeV3 | 394.0s | P&L=$+2,656.62 | trades=705 | rejected=48318
+Loading strategy: my_strategy.py
+Strategy loaded: AggressiveEdgeV3
+Loading data from: /Users/antara/finaldatahacks/DATAHACKS2026/data/train
+Running backtest: 287996 ticks, 3566 markets...
+
+============================================================
+  BACKTEST REPORT: AggressiveEdgeV3
+============================================================
+  Period:     2026-04-11 11:45:43 UTC -> 2026-04-14 19:45:38 UTC
+  Duration:   80.0 hours (287,995 seconds)
+  Runtime:    394.0s
+
+  Starting:   $ 10,000.00
+  Final:      $ 12,656.62
+  P&L:        $ +2,656.62 (+26.57%)
+
+  Sharpe:          15.82
+  Max DD:     $  1,258.67 (11.54%)
+  Win Rate:        83.3%
+
+  Trades:            705
+  Settlements:      3557
+  Rejected:        48318
+  Avg P&L:    $   +3.7682
+
+  Competition Score: $+2,656.62
+============================================================
+

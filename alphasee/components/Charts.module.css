@@ -1,0 +1,104 @@
+.twoCharts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.chartBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chartTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.toggleGroup {
+  display: flex;
+  gap: 4px;
+}
+
+.toggleBtn {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+
+.toggleBtn:hover { border-color: var(--lavender-mid); color: var(--purple-dark); }
+
+.toggleBtnActive {
+  background: var(--lavender-light) !important;
+  color: var(--purple-dark) !important;
+  border-color: var(--lavender-mid) !important;
+}
+
+.chartMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.chartMetaVal {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.chartMetaLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.legendRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.legendBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+
+.legendBtn:hover { border-color: var(--lavender-mid); }
+
+.legendBtnFaded {
+  opacity: 0.35;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .twoCharts { grid-template-columns: 1fr; }
+}

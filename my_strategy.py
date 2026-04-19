@@ -1,173 +1,204 @@
-"""
-Late-Window Drift - an intuitive baseline strategy.
-
-Intuition
----------
-A Polymarket binary "BTC up-or-down over the next 5 minutes" market must
-eventually pay $1 to whichever side Chainlink declares the winner. As the
-market nears expiry, the outcome is *almost* deterministic:
-
-    btc_now > btc_open  =>  YES will win
-    btc_now < btc_open  =>  NO  will win
-
-An efficient market should price the winning side near $1 in the final
-minute. But the Polymarket book is thin and laggy; we often see the losing
-side still trading at 0.30-0.50 with 30-60 seconds left. That is free edge
-IF our feed is clean.
-
-Rule:
-  - Wait until `time_remaining_frac <= LATE_WINDOW` (default 0.40, i.e. the
-    last 40% of the market's life).
-  - Look at Chainlink oracle drift: `btc_now - btc_open`. A small deadband
-    filters out microscopic moves where the outcome is genuinely uncertain.
-  - If drift > +DEADBAND, the fair value of YES is ~1.0; buy YES if its ask
-    price leaves us meaningful room (< MAX_PAY).
-  - Symmetric on the NO side.
-
-This deliberately skips:
-  - Volatility / Black-Scholes. The whole point is that with <40% time left
-    and a clear drift, sigma*sqrt(tau) is tiny and the probability collapses
-    to 0 or 1. No model needed.
-  - Order-book imbalance, momentum, spread capture, etc.
-
-We focus on DATA ENGINEERING:
-  - Per-market `btc_open` captured from the first tick the market is seen.
-  - Chainlink staleness guard: if the oracle feed has not updated recently,
-    we don't trust `btc_now` and abstain.
-  - Book sanity: skip markets with no ask quote or a nonsense ask.
-  - Position limit and cash guards applied before every order.
-  - Single entry per (market, side) - no stacking into the same idea.
-"""
-
+from __future__ import annotations
+import math
+from collections import deque
 from backtester.strategy import (
-    BaseStrategy,
-    Fill,
-    MarketState,
-    Order,
-    Settlement,
-    Side,
-    Token,
+    BaseStrategy, Fill, MarketState, Order,
+    Settlement, Side, Token
 )
-
-
-class LateWindowDrift(BaseStrategy):
-    # ── Knobs (all chosen for BTC 5m markets) ────────────────────────────────
-    LATE_WINDOW = 0.40   # trade only in the last 40% of a market's life
-    DEADBAND_USD = 10.0  # ignore drifts smaller than $10 on BTC (noise)
-    MAX_PAY = 0.85       # don't pay more than 85c even for the "right" side
-    MIN_PAY = 0.05       # ignore tokens trading below 5c (can't get fills)
-    SIZE = 20.0          # shares per entry
-    MAX_STALE_S = 30     # Chainlink freshness guard
-
-    def __init__(self) -> None:
-        # Data engineering state kept across ticks:
-        self._btc_open: dict[str, float] = {}   # slug -> Chainlink BTC at first tick
-        self._last_cl_update_ts: int = 0        # last tick Chainlink advanced
-        self._last_cl_price: float = 0.0        # last observed Chainlink
-        self._entered: set[tuple[str, Token]] = set()  # (slug, side) we've already entered
-
-    # ── Helpers ──────────────────────────────────────────────────────────────
-    @staticmethod
-    def _is_btc_slug(slug: str) -> bool:
-        s = slug.lower()
-        return s.startswith("btc-") or s.startswith("bitcoin-")
-
-    def _chainlink_is_fresh(self, ts: int) -> bool:
-        return (ts - self._last_cl_update_ts) <= self.MAX_STALE_S
-
-    # ── Main callback ────────────────────────────────────────────────────────
-    def on_tick(self, state: MarketState) -> list[Order]:
-        ts = state.timestamp
-        cl = state.chainlink_btc
-
-        # 1. Update Chainlink freshness tracker. The data loader forward-fills
-        #    the oracle, so `cl` is always non-zero once we've seen it once,
-        #    but we only want to ACT when it actually changed recently.
-        if cl > 0 and cl != self._last_cl_price:
-            self._last_cl_price = cl
-            self._last_cl_update_ts = ts
-
-        if cl <= 0 or not self._chainlink_is_fresh(ts):
-            return []
-
-        orders: list[Order] = []
-
-        for slug, market in state.markets.items():
-            # 2. Scope: BTC 5m markets only. Keeps the strategy honest and
-            #    avoids cross-asset noise (SOL/ETH would use different opens).
-            if not self._is_btc_slug(slug):
-                continue
-            if market.interval != "5m":
-                continue
-
-            # 3. Capture btc_open on the FIRST tick we ever see this market.
-            #    This is the real data-engineering gotcha: markets appear
-            #    mid-second, and the backtester hands them to us the tick
-            #    they become ACTIVE. That's our open.
-            if slug not in self._btc_open:
-                self._btc_open[slug] = cl
-                # Don't trade on the very first tick - no drift yet.
-                continue
-
-            btc_open = self._btc_open[slug]
-            drift = cl - btc_open
-
-            # 4. Late-window gate.
-            if market.time_remaining_frac > self.LATE_WINDOW:
-                continue
-
-            # 5. Deadband - require a meaningful directional drift.
-            if abs(drift) < self.DEADBAND_USD:
-                continue
-
-            if drift > 0:
-                # BTC is above open → YES is the favored side.
-                key = (slug, Token.YES)
-                if key in self._entered:
+# ─────────────────────────────────────────────
+# CONFIG (balanced for 15–20%)
+# ─────────────────────────────────────────────
+_VOL = {
+    ("BTC","5m"):0.004, ("BTC","15m"):0.007, ("BTC","hourly"):0.013,
+    ("ETH","5m"):0.005, ("ETH","15m"):0.009, ("ETH","hourly"):0.016,
+}
+_MAX_ENTRY = {"5m":280,"15m":360,"hourly":440}
+_MIN_BOOK_DEPTH = 45.0
+# ─────────────────────────────────────────────
+# HELPERS
+# ─────────────────────────────────────────────
+def _asset(slug):
+    s = slug.lower()
+    if s.startswith(("btc-","bitcoin-")): return "BTC"
+    if s.startswith(("eth-","ethereum-")): return "ETH"
+    return "SOL"
+def _interval(slug):
+    s = slug.lower()
+    if "-5m-" in s: return "5m"
+    if "-15m-" in s: return "15m"
+    return "hourly"
+def _ncdf(x):
+    return 0.5*(1+math.erf(x/math.sqrt(2)))
+def _fair_prob(spot,open_,vol,frac):
+    if spot<=0 or open_<=0: return 0.5
+    tau=max(frac,0.001)
+    sigma=vol*math.sqrt(tau)
+    if sigma<1e-8:
+        return 0.99 if spot>=open_ else 0.01
+    d2=math.log(spot/open_)/sigma - sigma/2
+    return max(0.01,min(0.99,_ncdf(d2)))
+def _imbalance(book):
+    b,a=book.total_bid_size,book.total_ask_size
+    t=b+a
+    return (b-a)/t if t>1 else 0.0
+# ─────────────────────────────────────────────
+# STRATEGY
+# ─────────────────────────────────────────────
+class AggressiveEdgeV3(BaseStrategy):
+    def __init__(self):
+        # tuned for scale, not overfit
+        self.arb_edge = 0.006
+        self.min_edge = 0.045
+        self.cash_frac = 0.92
+        self.momentum_threshold = 0.0002
+        self._open = {}
+        self._arb_count = {}
+        self._entered = set()
+        self._entry_price = {}
+        # history for correlation + momentum
+        self._hist = {
+            "BTC": deque(maxlen=200),
+            "ETH": deque(maxlen=200),
+        }
+        self._last_prices = {}
+    # ─────────────────────────────────────────
+    # DATA
+    # ─────────────────────────────────────────
+    def _cl(self, state, a):
+        return {
+            "BTC":state.chainlink_btc,
+            "ETH":state.chainlink_eth,
+            "SOL":state.chainlink_sol
+        }[a]
+    def _mid(self, state, a):
+        return {
+            "BTC":state.btc_mid,
+            "ETH":state.eth_mid,
+            "SOL":state.sol_mid
+        }[a]
+    def _momentum(self, a):
+        h=self._hist[a]
+        if len(h)<20: return 0.0
+        return (h[-1]-h[-20])/h[-20]
+    def _correlation_boost(self):
+        # simple BTC/ETH agreement signal
+        if len(self._hist["BTC"])<20 or len(self._hist["ETH"])<20:
+            return 0.0
+        btc_m = (self._hist["BTC"][-1]-self._hist["BTC"][-20])/self._hist["BTC"][-20]
+        eth_m = (self._hist["ETH"][-1]-self._hist["ETH"][-20])/self._hist["ETH"][-20]
+        if btc_m*eth_m > 0:  # same direction
+            return 0.01
+        return -0.01
+    def _cash(self,state):
+        return state.cash*self.cash_frac
+    def _remaining(self,slug,token,state):
+        pos=state.positions.get(slug)
+        if not pos: return 500
+        current=pos.yes_shares if token==Token.YES else pos.no_shares
+        return max(0,500-current)
+    # ─────────────────────────────────────────
+    # MAIN LOOP
+    # ─────────────────────────────────────────
+    def on_tick(self,state:MarketState):
+        orders=[]
+        cash=self._cash(state)
+        # update history
+        for a in ["BTC","ETH"]:
+            p=self._mid(state,a)
+            if p>0:
+                self._hist[a].append(p)
+        corr_boost = self._correlation_boost()
+        for slug,m in state.markets.items():
+            asset=_asset(slug)
+            interval=_interval(slug)
+            # SOL directional disabled
+            allow_dir = asset!="SOL"
+            cl=self._cl(state,asset)
+            if slug not in self._open and cl>0:
+                self._open[slug]=cl
+            cl_open=self._open.get(slug,0)
+            if cl_open<=0: continue
+            yes,no=m.yes_ask,m.no_ask
+            if yes<=0 or no<=0: continue
+            # ───────────────────────── ARB
+            combined=yes+no
+            edge=1-combined
+            count=self._arb_count.get(slug,0)
+            if edge>=self.arb_edge and count<8:
+                size=min(
+                    240,
+                    self._remaining(slug,Token.YES,state),
+                    self._remaining(slug,Token.NO,state),
+                    cash/combined if combined>0 else 0
+                )
+                if size>=20:
+                    orders.append(Order(slug,Token.YES,Side.BUY,size,yes))
+                    orders.append(Order(slug,Token.NO,Side.BUY,size,no))
+                    self._arb_count[slug]=count+1
+                    cash-=size*combined
                     continue
-                ask = market.yes_ask
-                if ask <= self.MIN_PAY or ask >= self.MAX_PAY:
-                    continue
-                cost = self.SIZE * ask
-                if state.cash < cost:
-                    continue
-                # Book-depth sanity: don't trade if there's no ask size at all.
-                if market.yes_book.total_ask_size < self.SIZE:
-                    continue
-                orders.append(Order(
-                    market_slug=slug,
-                    token=Token.YES,
-                    side=Side.BUY,
-                    size=self.SIZE,
-                    limit_price=ask,
-                ))
-                self._entered.add(key)
-
+            # ───────────────────────── DIRECTIONAL
+            if not allow_dir:
+                continue
+            if m.time_remaining_frac>0.85 or m.time_remaining_frac<0.03:
+                continue
+            fair=_fair_prob(
+                cl,cl_open,
+                _VOL.get((asset,interval),0.006),
+                m.time_remaining_frac
+            )
+            mom=self._momentum(asset)
+            if abs(mom)<self.momentum_threshold:
+                continue
+            # correlation-adjusted edge
+            adj_edge = self.min_edge + corr_boost
+            if cl>cl_open:
+                token=Token.YES
+                ask=yes
+                edge_d = fair-ask
+                if mom<0: continue
+                if m.yes_book.total_ask_size<_MIN_BOOK_DEPTH: continue
+            elif cl<cl_open:
+                token=Token.NO
+                ask=no
+                edge_d = (1-fair)-ask
+                if mom>0: continue
+                if m.no_book.total_ask_size<_MIN_BOOK_DEPTH: continue
             else:
-                # BTC is below open → NO is the favored side.
-                key = (slug, Token.NO)
-                if key in self._entered:
+                continue
+            if edge_d < adj_edge:
+                continue
+            # smarter re-entry (ONLY if edge improved)
+            if slug in self._entered:
+                prev=self._entry_price.get(slug,ask)
+                if edge_d < self.min_edge*1.5:
                     continue
-                ask = market.no_ask
-                if ask <= self.MIN_PAY or ask >= self.MAX_PAY:
-                    continue
-                cost = self.SIZE * ask
-                if state.cash < cost:
-                    continue
-                if market.no_book.total_ask_size < self.SIZE:
-                    continue
-                orders.append(Order(
-                    market_slug=slug,
-                    token=Token.NO,
-                    side=Side.BUY,
-                    size=self.SIZE,
-                    limit_price=ask,
-                ))
-                self._entered.add(key)
-
+            if ask>0.84:
+                continue
+            size=min(
+                _MAX_ENTRY.get(interval,250),
+                self._remaining(slug,token,state),
+                cash/ask if ask>0 else 0
+            )
+            if size<20:
+                continue
+            orders.append(Order(
+                slug,
+                token,
+                Side.BUY,
+                size,
+                min(ask+0.012,0.96)
+            ))
+            self._entered.add(slug)
+            self._entry_price[slug]=ask
+            cash-=size*ask
         return orders
-
-    def on_settlement(self, settlement: Settlement) -> None:
-        # Free memory for markets that have resolved - keeps state bounded
-        # on long backtests.
-        self._btc_open.pop(settlement.market_slug, None)
+    # ─────────────────────────────────────────
+    def on_settlement(self,settlement:Settlement):
+        slug=settlement.market_slug
+        self._open.pop(slug,None)
+        self._arb_count.pop(slug,None)
+        self._entered.discard(slug)
+        self._entry_price.pop(slug,None)
+    def on_fill(self,fill:Fill):
+        pass

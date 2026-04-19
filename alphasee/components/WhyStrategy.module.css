@@ -1,0 +1,64 @@
+.intro {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--purple-heading);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.pillar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--lavender-light);
+  border-radius: 8px;
+}
+
+.icon {
+  font-size: 16px;
+  color: var(--purple-dark);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.pillarLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.pillarSub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.conclusion {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.conclusionBar {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--lavender-mid);
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.conclusion p {
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 1.6;
+}

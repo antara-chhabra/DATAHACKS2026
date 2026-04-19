@@ -1,0 +1,75 @@
+08:43:41 [backtester.data_loader] INFO: Time filter: last 20.0h (1776123938 - 1776195938)
+08:43:41 [backtester.data_loader] INFO: Loading market prices...
+08:43:42 [backtester.data_loader] INFO: Loading order books...
+08:44:09 [backtester.data_loader] INFO: Loading Binance LOB...
+08:44:10 [backtester.data_loader] INFO: Loading Chainlink prices...
+08:44:11 [backtester.data_loader] INFO: Found 763 markets across ['5m', '15m', 'hourly']
+08:44:11 [backtester.data_loader] INFO: Computed 763 settlements
+08:44:13 [backtester.data_loader] INFO: Parsing 25,628 order-book snapshots...
+08:44:13 [backtester.data_loader] INFO:   parsed 5,125/25,628 books
+08:44:14 [backtester.data_loader] INFO:   parsed 10,250/25,628 books
+08:44:14 [backtester.data_loader] INFO:   parsed 15,375/25,628 books
+08:44:14 [backtester.data_loader] INFO:   parsed 20,500/25,628 books
+08:44:15 [backtester.data_loader] INFO:   parsed 25,625/25,628 books
+08:44:15 [backtester.data_loader] INFO: Building timeline: 71991 seconds, 763 markets
+08:44:15 [backtester.data_loader] INFO:   timeline build: 7,199/71,991 (10%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 14,398/71,991 (20%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 21,597/71,991 (30%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 28,796/71,991 (40%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 35,995/71,991 (50%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 43,194/71,991 (60%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 50,393/71,991 (70%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 57,592/71,991 (80%, active=9)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 64,791/71,991 (90%, active=3)
+08:44:15 [backtester.data_loader] INFO:   timeline build: 71,990/71,991 (100%, active=9)
+08:44:15 [backtester.data_loader] INFO: Timeline built: 71991 ticks, 763 markets
+08:44:15 [backtester.engine] INFO: Starting backtest: AggressiveEdgeV3 | 71991 ticks | $10,000 starting cash | 763 markets
+08:44:16 [backtester.engine] INFO: Tick 3600 (idx 3599/71991) | ts=1776127547 | portfolio=$10,259.15 | trades=12 | settled=41
+08:44:17 [backtester.engine] INFO: Tick 7200 (idx 7199/71991) | ts=1776131147 | portfolio=$10,259.15 | trades=12 | settled=80
+08:44:19 [backtester.engine] INFO: Tick 10800 (idx 10799/71991) | ts=1776134747 | portfolio=$10,540.00 | trades=14 | settled=119
+08:44:20 [backtester.engine] INFO: Tick 14400 (idx 14399/71991) | ts=1776138347 | portfolio=$10,540.00 | trades=14 | settled=131
+08:44:21 [backtester.engine] INFO: Tick 18000 (idx 17999/71991) | ts=1776141947 | portfolio=$10,540.00 | trades=14 | settled=176
+08:44:22 [backtester.engine] INFO: Tick 21600 (idx 21599/71991) | ts=1776145547 | portfolio=$10,540.00 | trades=14 | settled=224
+08:44:23 [backtester.engine] INFO: Tick 25200 (idx 25199/71991) | ts=1776149147 | portfolio=$10,540.00 | trades=14 | settled=257
+08:44:24 [backtester.engine] INFO: Tick 28800 (idx 28799/71991) | ts=1776152747 | portfolio=$10,540.00 | trades=14 | settled=296
+08:44:26 [backtester.engine] INFO: Tick 32400 (idx 32399/71991) | ts=1776156347 | portfolio=$10,540.00 | trades=14 | settled=347
+08:44:27 [backtester.engine] INFO: Tick 36000 (idx 35999/71991) | ts=1776159947 | portfolio=$10,540.00 | trades=14 | settled=392
+08:44:28 [backtester.engine] INFO: Tick 39600 (idx 39599/71991) | ts=1776163547 | portfolio=$10,540.00 | trades=14 | settled=433
+08:44:30 [backtester.engine] INFO: Tick 43200 (idx 43199/71991) | ts=1776167147 | portfolio=$10,540.00 | trades=14 | settled=454
+08:44:31 [backtester.engine] INFO: Tick 46800 (idx 46799/71991) | ts=1776170747 | portfolio=$10,518.47 | trades=16 | settled=496
+08:44:32 [backtester.engine] INFO: Tick 50400 (idx 50399/71991) | ts=1776174347 | portfolio=$10,518.47 | trades=16 | settled=538
+08:44:34 [backtester.engine] INFO: Tick 54000 (idx 53999/71991) | ts=1776177947 | portfolio=$10,755.74 | trades=18 | settled=571
+08:44:35 [backtester.engine] INFO: Tick 57600 (idx 57599/71991) | ts=1776181547 | portfolio=$10,824.24 | trades=19 | settled=610
+08:44:36 [backtester.engine] INFO: Tick 61200 (idx 61199/71991) | ts=1776185147 | portfolio=$10,824.24 | trades=19 | settled=637
+08:44:38 [backtester.engine] INFO: Tick 64800 (idx 64799/71991) | ts=1776188747 | portfolio=$10,824.24 | trades=19 | settled=664
+08:44:39 [backtester.engine] INFO: Tick 68400 (idx 68399/71991) | ts=1776192347 | portfolio=$10,767.10 | trades=29 | settled=703
+08:44:40 [backtester.engine] INFO: Tick 71991 (idx 71990/71991) | ts=1776195938 | portfolio=$11,836.13 | trades=41 | settled=754
+08:44:40 [backtester.engine] INFO: Backtest complete: AggressiveEdgeV3 | 25.2s | P&L=$+2,331.13 | trades=41 | rejected=14600
+Loading strategy: my_strategy.py
+Strategy loaded: AggressiveEdgeV3
+Loading data from: /Users/antara/finaldatahacks/DATAHACKS2026/data/train
+Running backtest: 71991 ticks, 763 markets...
+
+============================================================
+  BACKTEST REPORT: AggressiveEdgeV3
+============================================================
+  Period:     2026-04-13 23:45:48 UTC -> 2026-04-14 19:45:38 UTC
+  Duration:   20.0 hours (71,990 seconds)
+  Runtime:    25.2s
+
+  Starting:   $ 10,000.00
+  Final:      $ 12,331.13
+  P&L:        $ +2,331.13 (+23.31%)
+
+  Sharpe:          47.82
+  Max DD:     $    403.07 (3.63%)
+  Win Rate:        83.3%
+
+  Trades:             41
+  Settlements:       754
+  Rejected:        14600
+  Avg P&L:    $  +56.8569
+
+  Competition Score: $+2,331.13
+============================================================
+
