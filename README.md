@@ -11,7 +11,7 @@ Build a trading strategy for binary prediction markets on BTC, ETH, and SOL pric
 ## Quickstart
 
 ```bash
-git clone https://github.com/austntatious/DATAHACKS2026
+git clone https://github.com/antara-chhabra/DATAHACKS2026
 cd DATAHACKS2026
 pip install -r requirements.txt
 
