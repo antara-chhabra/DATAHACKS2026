@@ -37,8 +37,8 @@ python download_data.py
 ### ▶️ Run Backtests
 
 ```bash
-python run_backtest.py aggressive_edge.py
-python run_backtest.py aggressive_edge.py --data data/validation/
+python run_backtest.py strategies/aggressive_edge.py
+python run_backtest.py strategies/aggressive_edge.py --data data/validation/
 ```
 
 ---
